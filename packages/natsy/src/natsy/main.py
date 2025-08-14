@@ -9,8 +9,8 @@ import nats
 from loguru import logger
 from nats.aio.client import Client
 
-from natsy.schema import fetch_schema
-from natsy.types import Message
+from najs.schema import fetch_schema
+from najs.types import StreamMsg
 
 
 @asynccontextmanager
@@ -32,3 +32,28 @@ async def nats_context(
         await client.close()
 
 
+def avro_serialize(records: list[dict], schema: str) -> bytes:
+    payload = io.BytesIO()
+    fastavro.schemaless_writer(payload, schema, records)
+    return payload.getvalue()
+
+
+async def publish(
+    nc: Client,
+    msg: StreamMsg,
+) -> nats.js.api.PubAck:
+    """Publish message to Jetstream"""
+    js = nc.jetstream()
+
+    if msg.schema_name is None:
+        payload = json.dumps(msg.records).encode()
+    else:
+        schema = await fetch_schema(js, msg.schema_name)
+        payload = avro_serialize(msg.records, schema)
+
+    return await js.publish(
+        subject=msg.subject,
+        payload=payload,
+        stream=msg.stream,
+        headers=msg.headers,
+    )

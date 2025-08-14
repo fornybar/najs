@@ -1,6 +1,7 @@
 import asyncio
 import http.client
 import os
+import shutil
 import signal
 import subprocess
 import tempfile
@@ -194,13 +195,16 @@ def single_server():
     server_pool = []
     loop = asyncio.new_event_loop()
 
-    server = NATSD(port=4222)
+    server = NATSD(port=4222, with_jetstream=True)
     server_pool.append(server)
     for natsd in server_pool:
         start_natsd(natsd)
 
+    print("NATSD", natsd.store_dir)
     yield server
 
     for natsd in server_pool:
         natsd.stop()
+        shutil.rmtree(natsd.store_dir)
+
     loop.close()
