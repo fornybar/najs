@@ -1,6 +1,7 @@
 {
   inputs,
   python3,
+  pkgs,
   ...
 }:
 let
@@ -14,7 +15,10 @@ let
     ];
   };
   extraAttrs = {
-    nativeCheckInputs = [ python3.pkgs.pytestCheckHook ];
+    nativeCheckInputs = [
+      python3.pkgs.pytestCheckHook
+      pkgs.nats-server
+    ];
   };
 in
 python3.pkgs.buildPythonPackage (buildAttrs // extraAttrs)
