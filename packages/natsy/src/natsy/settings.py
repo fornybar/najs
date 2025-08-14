@@ -1,0 +1,6 @@
+import os
+
+SCHEMA_REGISTRY_BUCKET = os.environ.get(
+    "NATS_SCHEMA_REGISTRY_BUCKET",
+    "SCHEMA_REGISTRY",
+)
