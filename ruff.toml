@@ -1,0 +1,24 @@
+target-version = "py312"
+src = ["src"]
+exclude = []
+
+[lint]
+select = ["ALL"]
+ignore = [
+  "D", # pydocstyle, we do not enforce this
+]
+
+[lint.flake8-pytest-style]
+fixture-parentheses = false
+
+[lint.per-file-ignores]
+"**/tests/**/test_*.py" = [
+  "S101", # asserts allowed in tests...
+  "ANN", # Annotation
+  "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+  "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+  "PLR2004", # Magic value used in comparison, ...
+  "INP001", # Files in test are not part of package
+  "PT004", # Leading underscore on functions that dont return anything
+  "SLF001", # Allow access private class members
+]

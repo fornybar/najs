@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = ["pytest"]
+
+[project]
+name = "natsy"
+description = "Simple helper functions for utilizing nats-py"
+version = "0.0.1"
+dependencies = ["nats-py"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
