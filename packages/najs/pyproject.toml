@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 dev = ["pytest", "pytest-asyncio"]
 
 [project]
-name = "natsy"
+name = "najs"
 description = "Simple helper functions for utilizing nats-py"
 version = "0.0.1"
 dependencies = ["nats-py", "loguru", "fastavro"]

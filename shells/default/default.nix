@@ -5,17 +5,17 @@
   ...
 }:
 let
-  inherit (inputs.self.packages.${system}) natsy;
+  inherit (inputs.self.packages.${system}) najs;
 in
 pkgs.mkShell {
-  inputsFrom = [ natsy ];
+  inputsFrom = [ najs ];
 
   packages =
     with pkgs;
     [
       nats-server
     ]
-    ++ natsy.dependency-groups.dev;
+    ++ najs.dependency-groups.dev;
 
   shellHook = ''
     root=$(git rev-parse --show-toplevel)

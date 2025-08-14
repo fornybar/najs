@@ -2,7 +2,7 @@ target-version = "py312"
 src = ["src"]
 exclude = [
   # Don't want to fix format on NATSD which is copied from nats-py
-  "packages/natsy/tests/conftest.py",
+  "packages/najs/tests/conftest.py",
 ]
 
 [lint]

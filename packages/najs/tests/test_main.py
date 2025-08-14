@@ -1,7 +1,7 @@
 from pathlib import Path
 
+import najs
 import nats
-import natsy
 import pytest
 import pytest_asyncio
 from najs import nats_context, publish
@@ -10,7 +10,7 @@ from najs.types import StreamMsg
 
 
 def test_version():
-    assert natsy.__version__ == "0.0.1"
+    assert najs.__version__ == "0.0.1"
 
 
 def test_natspy_import():
