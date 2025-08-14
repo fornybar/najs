@@ -1,0 +1,13 @@
+name: Flake check
+run-name: "[PR check] ${{ github.event.pull_request.title }}"
+on:
+  pull_request:
+  workflow_call:
+jobs:
+  flake-check:
+    uses: fornybar/nixbuild-action/.github/workflows/ci-workflow.yml@master
+    secrets:
+      nixbuild_token: ${{ secrets.NIXBUILD_TOKEN }}
+      github_access_token: ${{ secrets.SVADIL_TOKEN }}
+    with:
+      filter_builds: '.system == "x86_64-linux"'
