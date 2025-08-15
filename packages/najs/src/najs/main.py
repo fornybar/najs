@@ -1,3 +1,4 @@
+import contextlib
 import io
 import json
 from collections.abc import AsyncGenerator
@@ -27,9 +28,15 @@ async def nats_context(
     try:
         yield client
     finally:
-        logger.info("Closing NATS client")
+        logger.debug("Closing NATS client")
         await client.flush()
-        await client.close()
+        # Fix for asyncio warning, "returning true from eof_received() has no effect
+        # when using ssl". See https://github.com/nats-io/nats.py/issues/574
+        with contextlib.suppress(AttributeError):
+            client._transport._io_writer._protocol.eof_received = (  # noqa: SLF001
+                lambda *args, **kwargs: None  # noqa: ARG005
+            )
+            await client.close()
 
 
 def avro_serialize(records: list[dict], schema: str) -> bytes:
