@@ -27,7 +27,7 @@ async def nats_context(
     try:
         yield client
     finally:
-        logger.info("Closing NATS client")
+        logger.debug("Closing NATS client")
         await client.flush()
         await client.close()
 
