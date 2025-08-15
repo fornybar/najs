@@ -2,6 +2,7 @@ from pathlib import Path
 
 import najs
 import nats
+import nkeys
 import pytest
 import pytest_asyncio
 from najs import nats_context, publish
@@ -15,6 +16,10 @@ def test_version():
 
 def test_natspy_import():
     assert isinstance(nats.__file__, str)
+
+
+def test_nkeys_import():
+    assert isinstance(nkeys.__file__, str)
 
 
 @pytest.mark.asyncio
