@@ -1,0 +1,17 @@
+{
+  "type": "array",
+  "items": {
+    "type": "record",
+    "name": "sample.schema",
+    "fields": [
+      {
+        "name": "number",
+        "type": "double"
+      },
+      {
+        "name": "sometext",
+        "type": "string"
+      }
+    ]
+  }
+}

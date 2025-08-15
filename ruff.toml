@@ -1,6 +1,9 @@
 target-version = "py312"
 src = ["src"]
-exclude = []
+exclude = [
+  # Don't want to fix format on NATSD which is copied from nats-py
+  "packages/najs/tests/conftest.py",
+]
 
 [lint]
 select = ["ALL"]

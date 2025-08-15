@@ -3,13 +3,13 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [dependency-groups]
-dev = ["pytest"]
+dev = ["pytest", "pytest-asyncio"]
 
 [project]
-name = "natsy"
+name = "najs"
 description = "Simple helper functions for utilizing nats-py"
 version = "0.0.1"
-dependencies = ["nats-py"]
+dependencies = ["nats-py", "nkeys", "loguru", "fastavro"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
