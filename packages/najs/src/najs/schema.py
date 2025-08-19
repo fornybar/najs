@@ -1,7 +1,7 @@
 import json
-from functools import lru_cache
 from pathlib import Path
 
+from async_lru import alru_cache
 from loguru import logger
 from nats.js import JetStreamContext
 from nats.js.errors import KeyNotFoundError
@@ -9,7 +9,7 @@ from nats.js.errors import KeyNotFoundError
 from najs.settings import SCHEMA_REGISTRY_BUCKET
 
 
-@lru_cache
+@alru_cache
 async def fetch_schema(
     js: JetStreamContext,
     name: str,
