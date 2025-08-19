@@ -87,3 +87,20 @@ async def test_publish_with_schema(nc, sample_subject):
         ),
     )
     assert ack.stream == stream
+
+
+@pytest.mark.asyncio
+async def test_fetch_schema(nc, sample_subject):
+    stream, subject = sample_subject
+    js = nc.jetstream()
+
+    await js.create_key_value(bucket=najs.settings.SCHEMA_REGISTRY_BUCKET)
+    schema_name = "sample.schema"
+    schema = await fetch_schema(
+        js,
+        schema_name,
+        fallback_path=Path(__file__).parent / f"{schema_name}.avsc",
+    )
+    # This time it should come from cache
+    cached_schema = await fetch_schema(js, schema_name)
+    assert cached_schema == schema
