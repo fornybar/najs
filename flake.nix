@@ -4,10 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     systems.url = "github:nix-systems/default";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     pyproject-nix = {
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,43 +18,41 @@
   };
 
   outputs =
-    inputs@{ self, nixpkgs, ... }:
-    let
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      self,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
+      imports = [ inputs.treefmt-nix.flakeModule ];
 
-      mkPkgs =
-        system:
-        import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = [ self.overlays.default ];
+      flake.overlays.default = import ./overlays/default { inherit inputs; };
+
+      perSystem =
+        { system, config, ... }:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = [ self.overlays.default ];
+          };
+        in
+        {
+          treefmt = import ./treefmt.nix;
+
+          packages = {
+            najs = pkgs.callPackage ./packages/najs { inherit inputs; };
+            nkeys-py = pkgs.callPackage ./packages/nkeys-py { };
+            default = config.packages.najs;
+          };
+
+          checks.najs-build = config.packages.najs;
+
+          devShells.default = import ./shells/default/default.nix {
+            inherit inputs pkgs system;
+          };
         };
-
-      forAllSystems = function: nixpkgs.lib.genAttrs systems (system: function (mkPkgs system));
-
-      mkTreefmt = pkgs: inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-    in
-    {
-      overlays.default = import ./overlays/default { inherit inputs; };
-
-      packages = forAllSystems (pkgs: {
-        najs = pkgs.callPackage ./packages/najs { inherit inputs; };
-        nkeys-py = pkgs.callPackage ./packages/nkeys-py { };
-        default = self.packages.${pkgs.system}.najs;
-      });
-
-      checks = forAllSystems (pkgs: {
-        format = (mkTreefmt pkgs).config.build.check self;
-        najs-build = self.packages.${pkgs.system}.najs;
-      });
-
-      formatter = forAllSystems (pkgs: (mkTreefmt pkgs).config.build.wrapper);
-
-      devShells = forAllSystems (pkgs: {
-        default = import ./shells/default/default.nix {
-          inherit inputs pkgs;
-          system = pkgs.system;
-        };
-      });
     };
 }
