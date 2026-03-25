@@ -9,7 +9,8 @@ dev = ["pytest", "pytest-asyncio"]
 name = "najs"
 description = "Simple helper functions for utilizing nats-py"
 version = "0.0.1"
-dependencies = ["async-lru", "nats-py", "nkeys", "loguru", "fastavro"]
+requires-python = ">=3.12"
+dependencies = ["async-lru", "fastavro", "loguru", "nats-py", "nkeys", "tenacity"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
