@@ -19,6 +19,6 @@ pkgs.mkShell {
 
   shellHook = ''
     root=$(git rev-parse --show-toplevel)
-    export PYTHONPATH=$(printf '%s:' $root/packages/*/src)$PYTHONPATH
+    export PYTHONPATH=$root/src${PYTHONPATH:+:$PYTHONPATH}
   '';
 }

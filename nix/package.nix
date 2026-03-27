@@ -6,7 +6,7 @@
 }:
 let
   project = inputs.pyproject-nix.lib.project.loadPyproject {
-    projectRoot = ./.;
+    projectRoot = ./..;
   };
   buildAttrs = project.renderers.buildPythonPackage {
     python = python3;

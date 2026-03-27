@@ -15,7 +15,7 @@ final: prev: {
         else
           python-prev.async-lru;
       nkeys = python-prev.pkgs.callPackage (inputs.self + "/packages/nkeys-py") { };
-      najs = python-prev.pkgs.callPackage (inputs.self + "/packages/najs") {
+      najs = python-prev.pkgs.callPackage (inputs.self + "/nix/package.nix") {
         inherit inputs;
       };
     })

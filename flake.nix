@@ -43,7 +43,7 @@
           treefmt = import ./treefmt.nix;
 
           packages = {
-            najs = pkgs.callPackage ./packages/najs { inherit inputs; };
+            najs = pkgs.callPackage ./nix/package.nix { inherit inputs; };
             nkeys-py = pkgs.callPackage ./packages/nkeys-py { };
             default = config.packages.najs;
           };
