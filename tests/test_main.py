@@ -1,10 +1,11 @@
 from pathlib import Path
 
-import najs
 import nats
 import nkeys
 import pytest
 import pytest_asyncio
+
+import najs
 from najs import nats_context, publish
 from najs.schema import fetch_schema
 from najs.types import StreamMsg
