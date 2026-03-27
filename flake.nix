@@ -1,5 +1,5 @@
 {
-  description = "Eviny EMPS projects";
+  description = "najs: NATS JetStream helpers with dual uv2nix and nixpkgs overlay workflows";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -15,44 +15,43 @@
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+    };
+
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+    };
   };
 
   outputs =
     inputs@{
       flake-parts,
-      nixpkgs,
-      self,
       ...
     }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import inputs.systems;
-      imports = [ inputs.treefmt-nix.flakeModule ];
-
-      flake.overlays.default = import ./overlays/default { inherit inputs; };
-
-      perSystem =
-        { system, config, ... }:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-            overlays = [ self.overlays.default ];
-          };
-        in
-        {
-          treefmt = import ./treefmt.nix;
-
-          packages = {
-            najs = pkgs.callPackage ./packages/najs { inherit inputs; };
-            nkeys-py = pkgs.callPackage ./packages/nkeys-py { };
-            default = config.packages.najs;
-          };
-
-          checks.najs-build = config.packages.najs;
-
-          devShells.default = import ./shells/default/default.nix {
-            inherit inputs pkgs system;
+    flake-parts.lib.mkFlake
+      {
+        inherit inputs;
+        specialArgs = {
+          workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
+            workspaceRoot = ./.;
           };
         };
-    };
+      }
+      {
+        systems = import inputs.systems;
+
+        imports = [
+          inputs.treefmt-nix.flakeModule
+          ./nix/overlays
+          ./nix/checks
+          ./nix/shells
+        ];
+      };
 }

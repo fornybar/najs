@@ -2,6 +2,7 @@ import inspect
 
 import nats.errors
 import pytest
+
 from najs.retry import nats_retry
 
 

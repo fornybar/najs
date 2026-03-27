@@ -1,24 +1,22 @@
 {
   inputs,
-  python3,
+  python,
   pkgs,
   ...
 }:
 let
   project = inputs.pyproject-nix.lib.project.loadPyproject {
-    projectRoot = ./.;
+    projectRoot = ./..;
   };
   buildAttrs = project.renderers.buildPythonPackage {
-    python = python3;
-    groups = [
-      "dev"
-    ];
+    inherit python;
   };
   extraAttrs = {
     nativeCheckInputs = [
-      python3.pkgs.pytestCheckHook
+      python.pkgs.pytestCheckHook
+      python.pkgs."pytest-asyncio"
       pkgs.nats-server
     ];
   };
 in
-python3.pkgs.buildPythonPackage (buildAttrs // extraAttrs)
+python.pkgs.buildPythonPackage (buildAttrs // extraAttrs)
