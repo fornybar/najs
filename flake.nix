@@ -1,5 +1,5 @@
 {
-  description = "najs: NATS JetStream helpers with dual uv2nix and nixpkgs overlay workflows";
+  description = "najs: NATS JetStream helpers";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -11,36 +11,24 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pyproject-nix = {
-      url = "github:pyproject-nix/pyproject.nix";
+    uvloom = {
+      url = "github:fornybar/uvloom";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    uv2nix = {
-      url = "github:pyproject-nix/uv2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pyproject-nix.follows = "pyproject-nix";
-    };
-
-    pyproject-build-systems = {
-      url = "github:pyproject-nix/build-system-pkgs";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pyproject-nix.follows = "pyproject-nix";
-      inputs.uv2nix.follows = "uv2nix";
     };
   };
 
   outputs =
     inputs@{
       flake-parts,
+      uvloom,
       ...
     }:
     flake-parts.lib.mkFlake
       {
         inherit inputs;
         specialArgs = {
-          workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
-            workspaceRoot = ./.;
+          project = uvloom.lib.loadProject {
+            root = ./.;
           };
         };
       }

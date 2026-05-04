@@ -1,29 +1,21 @@
-{ workspace, inputs, ... }:
+{ project, ... }:
 {
   perSystem =
     { pkgs, ... }:
     let
-      python = pkgs.lib.head (
-        inputs.pyproject-nix.lib.util.filterPythonInterpreters {
-          inherit (workspace) requires-python;
-          inherit (pkgs) pythonInterpreters;
-        }
-      );
+      scope = project.forPython {
+        inherit pkgs;
+        editable = {
+          root = "$REPO_ROOT";
+          members = [ "najs" ];
+        };
+      };
 
-      pythonSet =
-        (pkgs.callPackage inputs.pyproject-nix.build.packages {
-          inherit python;
-        }).overrideScope
-          (
-            pkgs.lib.composeManyExtensions [
-              inputs.pyproject-build-systems.overlays.wheel
-              (workspace.mkPyprojectOverlay { sourcePreference = "wheel"; })
-              (workspace.mkEditablePyprojectOverlay { root = "$REPO_ROOT"; })
-            ]
-          );
-
-      venv = pythonSet.mkVirtualEnv "najs-dev" {
-        najs = [ "dev" ];
+      venv = scope.mkEditableVenv {
+        name = "najs-dev";
+        dependencies = {
+          najs = [ "dev" ];
+        };
       };
     in
     {
@@ -36,7 +28,7 @@
 
         env = {
           UV_NO_SYNC = "1";
-          UV_PYTHON = python.interpreter;
+          UV_PYTHON = scope.pythonSet.python.interpreter;
           UV_PYTHON_DOWNLOADS = "never";
         };
 
