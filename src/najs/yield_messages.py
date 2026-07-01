@@ -39,6 +39,20 @@ async def yield_messages(  # noqa: PLR0913
     nats_timeout: float | None = 5,
     heartbeat: float | None = 1,
 ) -> AsyncGenerator[list[Msg], None]:
+    """Yield messages from a pull subscription
+
+    Args:
+        sub: The pull subscription to fetch messages from.
+        batch: The number of messages to fetch in each batch.
+        enable_auto_ack: Whether to automatically acknowledge messages.
+        run_forever: Whether to keep fetching messages indefinitely.
+        nats_timeout: The timeout for fetching messages.
+        heartbeat: The heartbeat interval for fetching messages.
+
+    Yields:
+        A list of messages fetched from the subscription.
+    """
+
     # try block for cleanup.
     try:
         while True:
