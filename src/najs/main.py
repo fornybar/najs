@@ -39,7 +39,10 @@ async def nats_context(
             await client.close()
 
 
-def avro_serialize(records: list[dict], schema: str) -> bytes:
+def avro_serialize(
+    records: list[dict],
+    schema: str | list | dict,
+) -> bytes:
     payload = io.BytesIO()
     fastavro.schemaless_writer(payload, schema, records)
     return payload.getvalue()
