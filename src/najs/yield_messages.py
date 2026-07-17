@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 from collections.abc import AsyncGenerator
 
@@ -74,4 +75,5 @@ async def yield_messages(  # noqa: PLR0913
                 if heartbeat is not None:
                     await asyncio.sleep(heartbeat)
     finally:
-        await sub.unsubscribe()
+        with contextlib.suppress(nats.errors.ConnectionClosedError):
+            await sub.unsubscribe()
