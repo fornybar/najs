@@ -29,6 +29,31 @@ async def test_nats_context(single_server):
         assert nc.is_connected
 
 
+@pytest.mark.asyncio
+async def test_nats_context_closes_when_flush_fails(monkeypatch):
+    class Client:
+        closed = False
+
+        async def flush(self):
+            raise nats.errors.ConnectionClosedError
+
+        async def close(self):
+            self.closed = True
+
+    client = Client()
+
+    async def connect(*args, **kwargs):
+        return client
+
+    monkeypatch.setattr(nats, "connect", connect)
+
+    with pytest.raises(nats.errors.ConnectionClosedError):
+        async with nats_context():
+            pass
+
+    assert client.closed
+
+
 @pytest_asyncio.fixture
 async def nc(single_server):
     async with nats_context() as inited_context:
