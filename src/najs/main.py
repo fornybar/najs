@@ -29,13 +29,13 @@ async def nats_context(
         yield client
     finally:
         logger.debug("Closing NATS client")
-        await client.flush()
-        # Fix for asyncio warning, "returning true from eof_received() has no effect
-        # when using ssl". See https://github.com/nats-io/nats.py/issues/574
-        with contextlib.suppress(AttributeError):
-            client._transport._io_writer._protocol.eof_received = (  # noqa: SLF001
-                lambda *args, **kwargs: None  # noqa: ARG005
-            )
+        try:
+            await client.flush()
+        finally:
+            with contextlib.suppress(AttributeError):
+                client._transport._io_writer._protocol.eof_received = (  # noqa: SLF001
+                    lambda *args, **kwargs: None  # noqa: ARG005
+                )
             await client.close()
 
 
