@@ -7,6 +7,7 @@ from typing import Any
 
 import fastavro
 import nats
+import nats.js
 from loguru import logger
 from nats.aio.client import Client
 
@@ -40,7 +41,7 @@ async def nats_context(
 
 
 def avro_serialize(
-    records: list[dict],
+    records: dict | list[dict],
     schema: str | list | dict,
 ) -> bytes:
     payload = io.BytesIO()

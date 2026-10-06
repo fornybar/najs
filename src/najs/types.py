@@ -7,13 +7,13 @@ class StreamMsg(NamedTuple):
     Parameters:
         stream: Stream to which the message is published.
         subject: Subject to which the message is published.
-        records: List of records. Prefer to contain many records(/rows) in one message.
+        records: A record or a list of records. Prefer to contain many records(/rows) in one message.
         headers: The headers to be published.
         schema_name : Name of an avro schema that message should be serialized with
     """
 
     stream: str
     subject: str
-    records: list[dict]
+    records: dict | list[dict]
     headers: dict | None = None
     schema_name: str | None = None
