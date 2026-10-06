@@ -72,3 +72,20 @@ class FakeClient:
 
     def jetstream(self):
         return self.js
+
+
+class FakePublisherJetstream:
+    def __init__(self, publish_result=None):
+        self.publish_result = publish_result
+        self.published = []
+
+    async def publish(self, *, subject, payload, stream, headers):
+        self.published.append(
+            {
+                "subject": subject,
+                "payload": payload,
+                "stream": stream,
+                "headers": headers,
+            },
+        )
+        return self.publish_result

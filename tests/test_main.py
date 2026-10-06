@@ -1,9 +1,14 @@
+import io
 from pathlib import Path
+from typing import cast
 
+import fastavro
 import nats
 import nkeys
 import pytest
 import pytest_asyncio
+from mock_classes import FakeClient, FakePublisherJetstream
+from nats.aio.client import Client  # noqa: TC002
 
 import najs
 from najs import nats_context, publish
@@ -113,6 +118,39 @@ async def test_publish_with_schema(nc, sample_subject):
         ),
     )
     assert ack.stream == stream
+
+
+@pytest.mark.asyncio
+async def test_publish_single_record_with_schema(monkeypatch):
+    schema = {
+        "type": "record",
+        "name": "SingleRecord",
+        "fields": [{"name": "value", "type": "string"}],
+    }
+
+    async def fetch_schema(_js, _schema_name):
+        return schema
+
+    monkeypatch.setattr("najs.main.fetch_schema", fetch_schema)
+
+    js = FakePublisherJetstream()
+    record = {"value": "hello"}
+    await publish(
+        cast("Client", FakeClient(js)),
+        StreamMsg(
+            stream="test-stream",
+            subject="test.subject",
+            records=record,
+            schema_name="single-record.schema",
+        ),
+    )
+
+    decoded = fastavro.schemaless_reader(
+        io.BytesIO(js.published[0]["payload"]),
+        writer_schema=schema,
+        reader_schema=schema,
+    )
+    assert decoded == record
 
 
 @pytest.mark.asyncio
