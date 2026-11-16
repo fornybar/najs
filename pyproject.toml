@@ -44,5 +44,8 @@ fixture-parentheses = false
   "SLF001", # Allow access private class members
 ]
 
+[tool.uv]
+exclude-newer = "P7D"
+
 [tool.uv.extra-build-dependencies]
 nkeys = ["setuptools"]
